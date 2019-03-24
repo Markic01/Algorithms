@@ -1,0 +1,58 @@
+#include<bits/stdc++.h>
+using namespace std;
+struct Tacka{
+	int x,y;
+	bool operator==(Tacka a){
+		return a.x==x&&a.y==y;
+	}
+};
+Tacka input[100000],rez[100000];
+int n;
+int orientation(Tacka p1,Tacka p2,Tacka p3) 
+{ 
+    int val = (p2.y - p1.y) * (p3.x - p2.x) - 
+              (p2.x - p1.x) * (p3.y - p2.y); 
+    if (val == 0) return 0;  // colinear 
+    return (val > 0)? 1: 2; // clock or counterclock wise 
+} 
+void brute(int i,int j,Tacka res[],int a){
+	res[0]=input[i];
+	a=1;
+	for(int k=0;;k++){
+		Tacka q=input[k+a];
+		for(int w=k+a+1;w<=j;w++)
+			if(orientation(res[a-1],q,input[k])==1)
+				q=input[k];
+		if(q==res[0])
+			return;
+		else
+			res[a++]=q;
+	}
+}
+void spoj(Tacka levo[],int a,Tacka desno[],int b){
+	
+}
+void rek(int i,int j,Tacka res[],int m){
+	if(j-i<=5){
+		int b=0;
+		brute(i,j,res,b);  //napisi brute pa spoj
+		return;
+	}
+	Tacka levo[100000],desno[100000];
+	int mid=(i+j)/2,k1,k2;
+	rek(i,mid,levo,k1);
+	rek(mid+1,j,desno,k2);
+	spoj(levo,k1,desno,k2);
+}
+bool poredi(Tacka a,Tacka b){
+	return a.x<b.x;
+}
+void unos(){
+	cin>>n;
+	for(int i=0;i<n;i++)
+		cin>>input[i].x>>input[i].y;
+	sort(input,input+n,poredi);
+}
+int main(){
+	unos();
+}
