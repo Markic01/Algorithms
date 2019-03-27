@@ -47,7 +47,7 @@ void spoj(Tacka levo[],int a,Tacka desno[],int b){                      //jos ov
 }
 void rek(int i,int j,Tacka res[],int &m){
 	if(j-i<5){
-		brute(i,j,res,m);  //napisi brute pa spoj
+		brute(i,j,res,m);
 		return;
 	}
 	Tacka levo[100000],desno[100000];
