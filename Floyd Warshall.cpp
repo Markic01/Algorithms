@@ -4,7 +4,6 @@ using namespace std;
 int x[10000][10000],n,m,d[10000][10000],pre[10000][10000];
 vector<int> c;
 void put(int i,int j){
-    //cout<<i<<" "<<j<<endl;
     if(pre[i][j]==-1){
         c.pb(i);
         while(c.size()>1&&c[c.size()-1]==c[c.size()-2])c.pop_back();
