@@ -1,23 +1,24 @@
 #include<bits/stdc++.h>
 using namespace std;
 #define pb push_back
-int n,m,disc[100000],low[100000],parent[100000];
-static int k,tim,pos[100000],r[100000];
-vector<int> x[100000];
+#define N 100000
+int n,m,disc[N],low[N],parent[N];
+static int k,tim,visited[N],art_point[N];
+vector<int> x[N];
 int dfs(int i,int p){
     parent[i]=p;
     disc[i]=low[i]=tim++;
-    pos[i]=1;
+    visited[i]=1;
     int children=0;
     for(int j=0;j<x[i].size();j++)
-        if(!pos[x[i][j]]){
+        if(!visited[x[i][j]]){
             dfs(x[i][j],i);
             children++;
             low[i]=min(low[i],low[x[i][j]]);
             if(parent[i]==-1&&children>1)
-                r[i]=1;
+                art_point[i]=1;
             if(parent[i]!=-1&&low[x[i][j]]>=disc[i])
-                r[i]=1;
+                art_point[i]=1;
         }
         else
             low[i]=min(low[i],disc[x[i][j]]);
@@ -31,13 +32,14 @@ int main(){
         x[b].pb(a);
     }
     dfs(0,-1);
+    cout<<"Articulation points are: ";
     for(int i=0;i<n;i++)
-        if(r[i])
+        if(art_point[i])
             cout<<i<<" ";
-    cout<<endl;
+    cout<<'\n';
     for(int i(0);i<n;i++)
         cout<<disc[i]<<" ";
-    cout<<endl;
+    cout<<'\n';
     for(int i(0);i<n;i++)
         cout<<low[i]<<" ";
 }
