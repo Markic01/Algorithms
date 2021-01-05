@@ -1,2 +1,2 @@
-# Algoritmi
-24.03.2019.
+# Algorithms
+Some algorithms that I find interesting.
