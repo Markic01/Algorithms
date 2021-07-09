@@ -3,15 +3,13 @@ using namespace std;
 
 #define MEM_ERR "Not enough memory!"
 
-int puta=0;
-
 void error(string s){
 	cout<<s<<'\n';
 	exit(EXIT_FAILURE);
 }
 
 int** allocate_matrix(int n,int m){
-	int** x=(int**)malloc(n*sizeof(int*));
+	int** x=(int**)malloc(n*sizeof(*x));
 	if(x==NULL)
 		error(MEM_ERR);
 	for(int i=0;i<n;i++){
@@ -29,20 +27,14 @@ int** allocate_matrix(int n,int m){
 	return x;
 }
 
-void ispis(vector<int> c){
-	int n=c.size();
-	cout<<n<<'\n';
-	for(int i=0;i<n;i++)
-		cout<<c[i]<<" ";
-	cout<<'\n';
-}
-
 void path(int from,int to,int **prev,vector<int> &sol){
     if(sol.size()==0||sol[sol.size()-1]!=from)sol.push_back(from);
+    
 	if(prev[from][to]!=-1){
 		path(from,prev[from][to],prev,sol);
 		path(prev[from][to],to,prev,sol);
 	}
+	
     if(sol.size()==0||sol[sol.size()-1]!=to)sol.push_back(to);
 }
 
@@ -87,11 +79,13 @@ int main(){
     for(int i=0;i<(int)sol.size();i++)
         cout<<sol[i]<<" ";
     cout<<'\n';
+    
     for(int i=0;i<nodes;i++){
 		free(dist[i]);
 		free(prev[i]);
 	}
 	free(dist);
 	free(prev);
+	
     return 0;
 }
