@@ -2,10 +2,8 @@
 using namespace std;
 
 #define MEM_ERR "Not enough memory!"
-#define pb push_back
 
-int n,m;
-vector<int> c;
+int puta=0;
 
 void error(string s){
 	cout<<s<<'\n';
@@ -13,7 +11,7 @@ void error(string s){
 }
 
 int** allocate_matrix(int n,int m){
-	int** x=(int**)malloc(n*sizeof(*x));
+	int** x=(int**)malloc(n*sizeof(int*));
 	if(x==NULL)
 		error(MEM_ERR);
 	for(int i=0;i<n;i++){
@@ -31,50 +29,69 @@ int** allocate_matrix(int n,int m){
 	return x;
 }
 
-void path(int i,int j,int** prev){
-    if(prev[i][j]==-1){
-        c.pb(i);
-        while(c.size()>1&&c[c.size()-1]==c[c.size()-2])c.pop_back();
-        c.pb(j);
-        while(c.size()>1&&c[c.size()-1]==c[c.size()-2])c.pop_back();
-        return;
-    }
-    c.pb(i);
-    while(c.size()>1&&c[c.size()-1]==c[c.size()-2])c.pop_back();
-    path(i,prev[i][j],prev);
-    path(prev[i][j],j,prev);
-    c.pb(j);
-    while(c.size()>1&&c[c.size()-1]==c[c.size()-2])c.pop_back();
+void ispis(vector<int> c){
+	int n=c.size();
+	cout<<n<<'\n';
+	for(int i=0;i<n;i++)
+		cout<<c[i]<<" ";
+	cout<<'\n';
+}
+
+void path(int from,int to,int **prev,vector<int> &sol){
+    if(sol.size()==0||sol[sol.size()-1]!=from)sol.push_back(from);
+	if(prev[from][to]!=-1){
+		path(from,prev[from][to],prev,sol);
+		path(prev[from][to],to,prev,sol);
+	}
+    if(sol.size()==0||sol[sol.size()-1]!=to)sol.push_back(to);
+}
+
+void FloydWarshall(int nodes,int*** dist,int*** prev){
+	for(int beg=0;beg<nodes;beg++)
+        for(int mid=0;mid<nodes;mid++)
+			if(mid!=beg&&(*dist)[beg][mid]!=INT_MAX)
+				for(int end=0;end<nodes;end++)
+					if((*dist)[mid][end]!=INT_MAX&&beg!=end&&mid!=end&&(*dist)[beg][mid]+(*dist)[mid][end]<(*dist)[beg][end]){
+						(*dist)[beg][end]=(*dist)[beg][mid]+(*dist)[mid][end];
+						(*prev)[beg][end]=mid;
+					}
 }
 
 int main(){
-	int n,m;
-    cin>>n>>m;
-    int **x,**d,**prev;
-    x=allocate_matrix(n,n);
-    d=allocate_matrix(n,n);
-    prev=allocate_matrix(n,n);
-    for(int i=0;i<n;i++)
-        for(int j=0;j<n;j++)
-            x[i][j]=0,d[i][j]=INT_MAX;
-    int a,b,t;
-    for(int i=0;i<m;i++){
-        cin>>a>>b>>t;
-        a--;
-        b--;
-        x[a][b]=d[a][b]=t;
-        prev[a][b]=-1;
-        prev[b][a]=-1;
-        x[b][a]=d[b][a]=t;
+	int nodes,vertices;
+    cin>>nodes>>vertices;
+
+    int **dist,**prev;
+    dist=allocate_matrix(nodes,nodes);
+    prev=allocate_matrix(nodes,nodes);
+
+    for(int i=0;i<nodes;i++){
+        for(int j=0;j<nodes;j++)
+            dist[i][j]=INT_MAX;
+        dist[i][i]=0;
+	}
+
+    int pointA,pointB,length;
+    for(int i=0;i<vertices;i++){
+        cin>>pointA>>pointB>>length;
+        dist[pointA][pointB]=dist[pointB][pointA]=length;
+        prev[pointA][pointB]=prev[pointB][pointA]=-1;
     }
-    for(int i=0;i<n;i++)
-        for(int j=0;j<n;j++)
-            for(int k=0;k<n&&j!=i;k++)
-                if(d[i][j]+d[j][k]<d[i][k]&&j!=k&&i!=k)
-                    d[i][k]=d[i][j]+d[j][k],prev[i][k]=j;
-    int u,v;
-    cin>>u>>v;
-    path(u,v,prev);
-    for(int i=0;i<(int)c.size();i++)
-        cout<<c[i]<<" ";
+    
+    FloydWarshall(nodes,&dist,&prev);
+
+	vector<int> sol;
+    int from,to;
+    cin>>from>>to;
+    path(from,to,prev,sol);
+    for(int i=0;i<(int)sol.size();i++)
+        cout<<sol[i]<<" ";
+    cout<<'\n';
+    for(int i=0;i<nodes;i++){
+		free(dist[i]);
+		free(prev[i]);
+	}
+	free(dist);
+	free(prev);
+    return 0;
 }
