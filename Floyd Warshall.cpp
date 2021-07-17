@@ -1,34 +1,12 @@
-#include <bits/stdc++.h>
-using namespace std;
+#include <iostream>
+#include <vector>
+#include <string>
+#include <climits>
 
-#define MEM_ERR "Not enough memory!"
 
-void error(string s){
-	cout<<s<<'\n';
-	exit(EXIT_FAILURE);
-}
-
-int** allocate_matrix(int n,int m){
-	int** x=(int**)malloc(n*sizeof(*x));
-	if(x==NULL)
-		error(MEM_ERR);
-	for(int i=0;i<n;i++){
-		x[i]=(int*)malloc(m*sizeof(**x));
-		if(x[i]==NULL){
-			for(int j=i-1;j>=0;j--){
-				free(x[i]);
-				x[i]=NULL;
-			}
-			free(x);
-			x=NULL;
-			error(MEM_ERR);
-		}
-	}
-	return x;
-}
-
-void path(int from,int to,int **prev,vector<int> &sol){
-    if(sol.size()==0||sol[sol.size()-1]!=from)sol.push_back(from);
+void path(int from,int to,const std::vector<std::vector<int>>& prev,std::vector<int>& sol){
+    if(sol.size()==0||sol[sol.size()-1]!=from)
+		sol.push_back(from);
     
 	if(prev[from][to]!=-1){
 		path(from,prev[from][to],prev,sol);
@@ -38,24 +16,23 @@ void path(int from,int to,int **prev,vector<int> &sol){
     if(sol.size()==0||sol[sol.size()-1]!=to)sol.push_back(to);
 }
 
-void FloydWarshall(int nodes,int*** dist,int*** prev){
+void FloydWarshall(const int nodes, std::vector<std::vector<int>>& dist, std::vector<std::vector<int>>& prev){
 	for(int beg=0;beg<nodes;beg++)
         for(int mid=0;mid<nodes;mid++)
-			if(mid!=beg&&(*dist)[beg][mid]!=INT_MAX)
+			if(mid!=beg&&dist[beg][mid]!=INT_MAX)
 				for(int end=0;end<nodes;end++)
-					if((*dist)[mid][end]!=INT_MAX&&beg!=end&&mid!=end&&(*dist)[beg][mid]+(*dist)[mid][end]<(*dist)[beg][end]){
-						(*dist)[beg][end]=(*dist)[beg][mid]+(*dist)[mid][end];
-						(*prev)[beg][end]=mid;
+					if(dist[mid][end]!=INT_MAX&&beg!=end&&mid!=end&&dist[beg][mid]+dist[mid][end]<dist[beg][end]){
+						dist[beg][end]=dist[beg][mid]+dist[mid][end];
+						prev[beg][end]=mid;
 					}
 }
 
 int main(){
 	int nodes,vertices;
-    cin>>nodes>>vertices;
+    std::cin>>nodes>>vertices;
 
-    int **dist,**prev;
-    dist=allocate_matrix(nodes,nodes);
-    prev=allocate_matrix(nodes,nodes);
+    std::vector<std::vector<int>> dist(nodes,std::vector<int>(nodes));
+    std::vector<std::vector<int>> prev(nodes,std::vector<int>(nodes));
 
     for(int i=0;i<nodes;i++){
         for(int j=0;j<nodes;j++)
@@ -65,27 +42,20 @@ int main(){
 
     int pointA,pointB,length;
     for(int i=0;i<vertices;i++){
-        cin>>pointA>>pointB>>length;
+        std::cin>>pointA>>pointB>>length;
         dist[pointA][pointB]=dist[pointB][pointA]=length;
         prev[pointA][pointB]=prev[pointB][pointA]=-1;
     }
     
-    FloydWarshall(nodes,&dist,&prev);
-
-	vector<int> sol;
+    FloydWarshall(nodes,dist,prev);
+    
+	std::vector<int> sol;
     int from,to;
-    cin>>from>>to;
+    std::cin>>from>>to;
     path(from,to,prev,sol);
     for(int i=0;i<(int)sol.size();i++)
-        cout<<sol[i]<<" ";
-    cout<<'\n';
-    
-    for(int i=0;i<nodes;i++){
-		free(dist[i]);
-		free(prev[i]);
-	}
-	free(dist);
-	free(prev);
+        std::cout<<sol[i]<<" ";
+    std::cout<<'\n';
 	
-    return 0;
+    exit(EXIT_SUCCESS);
 }
