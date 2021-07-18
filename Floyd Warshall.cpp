@@ -19,14 +19,18 @@ void path(int from,int to,const std::vector<std::vector<int>>& prev,std::vector<
 }
 
 void FloydWarshall(const int nodes, std::vector<std::vector<int>>& dist, std::vector<std::vector<int>>& prev){
-    for(int beg=0;beg<nodes;beg++)
-        for(int mid=0;mid<nodes;mid++)
-            if(mid!=beg&&dist[beg][mid]!=INT_MAX)
-                for(int end=0;end<nodes;end++)
+    for(int beg=0;beg<nodes;beg++){
+        for(int mid=0;mid<nodes;mid++){
+            if(mid!=beg&&dist[beg][mid]!=INT_MAX){
+                for(int end=0;end<nodes;end++){
                     if(dist[mid][end]!=INT_MAX&&beg!=end&&mid!=end&&dist[beg][mid]+dist[mid][end]<dist[beg][end]){
                         dist[beg][end]=dist[beg][mid]+dist[mid][end];
                         prev[beg][end]=mid;
                     }
+                }
+            }
+        }
+    }
 }
 
 int main(){
@@ -37,8 +41,9 @@ int main(){
     std::vector<std::vector<int>> prev(nodes,std::vector<int>(nodes));
 
     for(int i=0;i<nodes;i++){
-        for(int j=0;j<nodes;j++)
+        for(int j=0;j<nodes;j++){
             dist[i][j]=INT_MAX;
+        }
         dist[i][i]=0;
     }
 
@@ -55,8 +60,9 @@ int main(){
     int from,to;
     std::cin>>from>>to;
     path(from,to,prev,sol);
-    for(int i=0;i<(int)sol.size();i++)
+    for(int i=0;i<(int)sol.size();i++){
         std::cout<<sol[i]<<" ";
+    }
     std::cout<<'\n';
 	
     exit(EXIT_SUCCESS);
