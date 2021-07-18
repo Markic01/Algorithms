@@ -4,15 +4,18 @@
 
 
 void path(int from,int to,const std::vector<std::vector<int>>& prev,std::vector<int>& sol){
-    if(sol.size()==0||sol[sol.size()-1]!=from)
+    if(sol.size()==0||sol[sol.size()-1]!=from){
         sol.push_back(from);
+    }
     
     if(prev[from][to]!=-1){
         path(from,prev[from][to],prev,sol);
         path(prev[from][to],to,prev,sol);
     }
 	
-    if(sol.size()==0||sol[sol.size()-1]!=to)sol.push_back(to);
+    if(sol.size()==0||sol[sol.size()-1]!=to){
+        sol.push_back(to);
+    }
 }
 
 void FloydWarshall(const int nodes, std::vector<std::vector<int>>& dist, std::vector<std::vector<int>>& prev){
