@@ -1,65 +1,78 @@
-#include<bits/stdc++.h>
-using namespace std;
-#define pb push_back
-int n,izv,m,l[100000],pre[100000];
-vector<int> x[100000],y[100000];
-int nadjimin(bool a[]){
-    int mini=-1;
-    for(int i=1;i<n;i++)
-        if((mini==-1&&!a[i])||(!a[i]&&x[i]<x[mini]))
-            mini=i;
-    return mini;
-}
-int minDis(bool sptSet[])
-{
-   // Initialize min value
-   int min = INT_MAX, min_index;
+#include <iostream>
+#include <vector>
+#include <climits>
 
-   for (int v = 0; v < n; v++)
-     if (sptSet[v] == false && l[v] <= min)
-         min = l[v], min_index = v;
 
-   return min_index;
+int findMinDist(const std::vector<bool>& visited,
+                const std::vector<int>& dist,const int numNodes){
+    int minIndex=-1;
+    for(int i=0;i<numNodes;i++){
+        if((minIndex==-1&&!visited[i]) || (!visited[i]&&dist[i]<dist[minIndex])){
+            minIndex=i;
+        }
+    }
+    return minIndex;
 }
-void dijkstra(){
-    static bool a[100000];
-    int u;
-    pre[izv]=-1;
-    for(int i=0;i<n;i++){
-        u=minDis(a);
-        if(u==-1)
+
+void dijkstra(const int numNodes,const int startNode,
+              const std::vector<std::vector<int>>& adjacent,
+              const std::vector<std::vector<int>>& weight,
+              std::vector<int>& parent,std::vector<int>& dist){
+    static std::vector<bool> visited(numNodes,0);
+    int currMin;
+    dist[startNode]=0;
+    parent[startNode]=-1;
+    
+    for(int i=0;i<numNodes;i++){
+        currMin=findMinDist(visited,dist,numNodes);
+        if(currMin==-1){
             break;
-        a[u]=1;
-        for(int j=0;j<x[u].size();j++)
-            if(l[u]+y[u][j]<l[x[u][j]]){
-                l[x[u][j]]=l[u]+y[u][j];
-                pre[x[u][j]]=u;
+        }
+        visited[currMin]=1;
+        for(int j=0;j<adjacent[currMin].size();j++){
+            int to=adjacent[currMin][j];
+            int currWeight=weight[currMin][j];
+            if(dist[currMin]+currWeight<dist[to]){
+                dist[to]=dist[currMin]+currWeight;
+                parent[to]=currMin;
             }
+        }
     }
 }
-void put(int i){
-    if(pre[i]==-1){
-        cout<<i<<" "<<endl;
+
+void path(int i,const std::vector<int>& parent){
+    if(parent[i]==-1){
+        std::cout<<i<<'\n';
         return;
     }
-    put(pre[i]);
-    cout<<i<<endl;
+    
+    path(parent[i],parent);
+    std::cout<<i<<'\n';
 }
+
 int main(){
-    cin>>n>>m>>izv;
-    int a,b,t;
-    for(int i=0;i<m;i++){
-        cin>>a>>b>>t;
-        x[a].pb(b);
-        x[b].pb(a);
-        y[a].pb(t);
-        y[b].pb(t);
+    int numNodes,numVertices,startNode;
+    std::cin>>numNodes>>numVertices;
+    
+    std::vector<std::vector<int> > adjacent(numNodes),weight(numNodes);
+    std::vector<int> visited(numNodes,0),dist(numNodes,INT_MAX);
+    std::vector<int> parent(numNodes);
+    
+    int from,to,value;
+    for(int i=0;i<numVertices;i++){
+        std::cin>>from>>to>>value;
+        adjacent[from].push_back(to);
+        adjacent[to].push_back(from);
+        weight[from].push_back(value);
+        weight[to].push_back(value);
     }
-    for(int i=0;i<n;i++)
-        l[i+1]=INT_MAX;
-    l[izv]=0;
-    dijkstra();
-    int u;
-    cin>>u;
-    put(u);
+    std::cin>>startNode;
+    
+    dijkstra(numNodes,startNode,adjacent,weight,parent,dist);
+    
+    int endNode;
+    std::cin>>endNode;
+    std::cout<<"Distance from "<<startNode<<" to "<<endNode<<" is "<<dist[endNode]<<'\n';
+    path(endNode,parent);
+    exit(EXIT_SUCCESS);
 }
