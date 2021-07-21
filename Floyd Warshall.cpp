@@ -12,7 +12,7 @@ void path(int from,int to,const std::vector<std::vector<int>>& prev,std::vector<
         path(from,prev[from][to],prev,sol);
         path(prev[from][to],to,prev,sol);
     }
-	
+
     if(sol.size()==0||sol[sol.size()-1]!=to){
         sol.push_back(to);
     }
