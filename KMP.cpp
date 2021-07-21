@@ -1,31 +1,21 @@
-#include<bits/stdc++.h>
-using namespace std;
-char txt[100],pat[100];
-int lps[100000],n,m;
-void duzine(){
-    int i;
-    for(i=0;txt[i]!='\0';i++){}
-    n=i;
-    for(i=0;pat[i]!='\0';i++){}
-    m=i;
-}
-void unos(){
-    cin.getline(txt,100);
-    cin.getline(pat,100);
-    duzine();
-}
-void napravi_lps(){
+#include <iostream>
+#include <vector>
+#include <string>
+
+void makeLPS(const std::string& pattern, std::vector<int>& lps){
     lps[0]=0;
     int len=0,i=1;
-    while(i<m){
-        if(pat[i]==pat[len]){
+    int patternLength=pattern.length();
+    while(i<patternLength){
+        if(pattern[i]==pattern[len]){
             len++;
             lps[i]=len;
             i++;
         }
         else{
-            if(len>0)
+            if(len>0){
                 len=lps[len-1];
+            }
             else{
                 lps[i]=0;
                 i++;
@@ -33,15 +23,16 @@ void napravi_lps(){
         }
     }
 }
-void ispislps(){
-    for(int i=0;i<m;i++)
-        cout<<lps[i];
-}
-void rresi(){
-    napravi_lps();
+
+void KnuthMorrisPratt(const std::string& inputText, const std::string& pattern){
+    std::vector<int> lps(pattern.length());
+    makeLPS(pattern,lps);
+
     int i=0,j=0;
-    while(i<n){
-        if(txt[i]==pat[j]){
+    int textLength=inputText.length();
+    int patternLength=pattern.length();
+    while(i<textLength){
+        if(inputText[i]==pattern[j]){
             i++;
             j++;
         }
@@ -51,13 +42,18 @@ void rresi(){
             else
                 i++;
         }
-        if(j==m){
-            cout<<i-j<<endl;
+        if(j==patternLength){
+            std::cout<<i-j<<'\n';
             j=lps[j-1];
         }
     }
 }
+
 int main(){
-    unos();
-    rresi();
+    std::string inputText,pattern;
+    std::cin>>inputText>>pattern;
+
+    KnuthMorrisPratt(inputText,pattern);
+
+    exit(EXIT_SUCCESS);
 }
